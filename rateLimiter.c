@@ -121,17 +121,16 @@ int InfoBucket_RedisCommand(RedisModuleCtx *ctx, RedisModuleString **argv, int a
 
     RedisModule_ReplyWithArray(ctx,4);
     char tmpbuf[64]="\0";
-    snprintf(tmpbuf, sizeof(tmpbuf), "updatetime: %zu", tb.updatetime);
-    RedisModule_ReplyWithSimpleString(ctx,tmpbuf); // 更新时间
 
-    snprintf(tmpbuf, sizeof(tmpbuf), "maxPermits: %zu", tb.maxPermits);
-    RedisModule_ReplyWithSimpleString(ctx,tmpbuf); // 桶容量
+    #define MY_REPLY_WITH_SIMPLE_STRING(x, y) do{ \
+        snprintf(tmpbuf, sizeof(tmpbuf), #x": %zu", y); \
+        RedisModule_ReplyWithSimpleString(ctx,tmpbuf); \
+    }while(0)
 
-    snprintf(tmpbuf, sizeof(tmpbuf), "curr_permits: %zu", tb.curr_permits);
-    RedisModule_ReplyWithSimpleString(ctx,tmpbuf); // 当前令牌数
-
-    snprintf(tmpbuf, sizeof(tmpbuf), "rate: %zu", tb.rate);
-    RedisModule_ReplyWithSimpleString(ctx,tmpbuf); // 令牌增长速度. 每秒产生多少令牌
+    MY_REPLY_WITH_SIMPLE_STRING("updatetime", tb.updatetime); // 更新时间
+    MY_REPLY_WITH_SIMPLE_STRING("maxPermits", tb.maxPermits); // 桶容量
+    MY_REPLY_WITH_SIMPLE_STRING("curr_permits", tb.curr_permits); // 当前令牌数
+    MY_REPLY_WITH_SIMPLE_STRING("rate", tb.rate); // 令牌增长速度. 每秒产生多少令牌
 
     return REDISMODULE_OK;
 }
